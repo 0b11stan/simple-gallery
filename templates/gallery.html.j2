@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>GALLERY</title>
+		<link href="{{ url_for('static', filename='css/cssbox.css') }}" rel="stylesheet"/>
+	</head>
+	<body>
+		{% for image in images %}
+			<div class="cssbox">
+				<a id="img{{ image[0] }}" href="#img{{ image[0] }}">
+					<img class="cssbox_thumb" src="static/{{ ''.join(image) }}" width=400 />
+					<span class="cssbox_full"><img src="static/{{ ''.join(image) }}"/></span>
+				</a>
+				<a class="cssbox_close" href="#void"></a>
+				{% if not loop.first %}
+					<a class="cssbox_prev" href="#img{{ loop.previtem[0] }}">&lt;</a>
+				{% endif %}
+				{% if not loop.last %}
+					<a class="cssbox_next" href="#img{{ loop.nextitem[0] }}">&gt;</a>
+				{% endif %}
+			</div>
+		{% endfor %}
+	</body>
+</html>
