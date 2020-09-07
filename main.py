@@ -1,13 +1,14 @@
+import os
+from os.path import isfile, join, splitext
 from flask import Flask, escape, request, render_template, redirect, url_for
 from werkzeug.utils import secure_filename
-from os import listdir
-from os.path import isfile, join, splitext
 
-IMAGES_PATH = 'static/pictures'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+UPLOAD_FOLDER = os.environ['UPLOAD_FOLDER']
+
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = IMAGES_PATH
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 
 def allowed_file(filename):
@@ -17,8 +18,8 @@ def allowed_file(filename):
 
 @app.route('/')
 def gallery():
-    images = [splitext(f) for f in listdir(IMAGES_PATH) if isfile(
-        join(IMAGES_PATH, f)
+    images = [splitext(f) for f in os.listdir(UPLOAD_FOLDER) if isfile(
+        join(UPLOAD_FOLDER, f)
     )]
     return render_template('gallery.html.j2', images=images)
 
