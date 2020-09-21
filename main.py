@@ -1,22 +1,23 @@
 import os
 from os.path import isfile, join, splitext
-from flask import Flask, escape, request, render_template, redirect, url_for
+from flask import Flask, request, render_template, redirect, url_for
 from werkzeug.utils import secure_filename
+from magic import Magic
 
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+ALLOWED_MIME = {'image/png', 'image/jpeg', 'image/gif'}
 UPLOAD_FOLDER = os.environ['UPLOAD_FOLDER']
 
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+getmime = Magic(mime=True)
 
 if not os.path.isdir(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
 
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+def allowed_mime(file):
+    return getmime.from_buffer(file.stream.read(2048)) in ALLOWED_MIME
 
 
 @app.route('/')
@@ -27,18 +28,14 @@ def gallery():
     return render_template('gallery.html.j2', images=images)
 
 
-@app.route('/pictures', methods=['POST'])
-def pic():
-    # TODO : return error if no file part
-    # if 'file' not in request.files:
-    #    flash('No file part')
-    #    return redirect(request.url)
+@app.route('/memories', methods=['POST'])
+def file():
+    if 'file' not in request.files:
+        return 'Missing content', 400
     file = request.files['file']
-    # TODO : return error if filename is empty
-    # if file.filename == '':
-    #    flash('No selected file')
-    #    return redirect(request.url)
-    if file and allowed_file(file.filename):
+    if not allowed_mime(file):
+        return 'MIME type not supported (allowed: png, jpeg and gif)', 415
+    if file:
         filename = secure_filename(file.filename)
         file.save(join(app.config['UPLOAD_FOLDER'], filename))
         return redirect(url_for('gallery'))
