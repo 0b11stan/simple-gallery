@@ -27,7 +27,7 @@ def gallery():
     return render_template('gallery.html.j2', images=images)
 
 
-@app.route('/pic', methods=['POST'])
+@app.route('/pictures', methods=['POST'])
 def pic():
     # TODO : return error if no file part
     # if 'file' not in request.files:
