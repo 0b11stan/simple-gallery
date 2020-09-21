@@ -10,6 +10,9 @@ UPLOAD_FOLDER = os.environ['UPLOAD_FOLDER']
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+if not os.path.isdir(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -26,13 +29,15 @@ def gallery():
 
 @app.route('/pic', methods=['POST'])
 def pic():
-    if 'file' not in request.files:
-        #flash('No file part')
-        return redirect(request.url)
+    # TODO : return error if no file part
+    # if 'file' not in request.files:
+    #    flash('No file part')
+    #    return redirect(request.url)
     file = request.files['file']
-    if file.filename == '':
-        #flash('No selected file')
-        return redirect(request.url)
+    # TODO : return error if filename is empty
+    # if file.filename == '':
+    #    flash('No selected file')
+    #    return redirect(request.url)
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         file.save(join(app.config['UPLOAD_FOLDER'], filename))
